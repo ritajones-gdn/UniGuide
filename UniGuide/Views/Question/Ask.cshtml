@@ -1,0 +1,52 @@
+﻿@model UniGuide.Models.Question
+
+@{
+    ViewData["Title"] = "Ask a Question";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">📝 Ask a Question</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="/Question/Ask">
+                        @Html.AntiForgeryToken()
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Title</label>
+                            <input name="Title" class="form-control"
+                                   placeholder="Enter your question title" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Description</label>
+                            <textarea name="Description" class="form-control"
+                                      rows="5" placeholder="Describe your question in detail" required></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Category</label>
+                            <select name="Category" class="form-select" required>
+                                <option value="">-- Select a Category --</option>
+                                <option value="Computer Science">Computer Science</option>
+                                <option value="Medicine">Medicine</option>
+                                <option value="Engineering">Engineering</option>
+                                <option value="Business">Business</option>
+                                <option value="General">General</option>
+                            </select>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                Submit Question
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,8 +1,71 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model List<UniGuide.Models.Question>
+
+@{
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container mt-4">
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>📚 All Questions</h2>
+        @if (User.IsInRole("HighSchool"))
+        {
+            <a href="/Question/Ask" class="btn btn-primary">+ Ask a Question</a>
+        }
+    </div>
+
+    <!-- Filter Dropdown -->
+    <form method="get" action="/" class="mb-4">
+        <div class="d-flex align-items-center gap-2">
+            <label class="fw-bold">Filter by Category:</label>
+            <select name="category" class="form-select w-auto" onchange="this.form.submit()">
+                <option value="All" selected="@(ViewBag.SelectedCategory == "All")">All</option>
+                <option value="Computer Science" selected="@(ViewBag.SelectedCategory == "Computer Science")">Computer Science</option>
+                <option value="Medicine" selected="@(ViewBag.SelectedCategory == "Medicine")">Medicine</option>
+                <option value="Engineering" selected="@(ViewBag.SelectedCategory == "Engineering")">Engineering</option>
+                <option value="Business" selected="@(ViewBag.SelectedCategory == "Business")">Business</option>
+                <option value="General" selected="@(ViewBag.SelectedCategory == "General")">General</option>
+            </select>
+        </div>
+    </form>
+
+    <!-- Questions List -->
+    @if (Model.Count == 0)
+    {
+        <div class="alert alert-info">No questions found. Be the first to ask!</div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var question in Model)
+            {
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <span class="badge bg-primary mb-2">@question.Category</span>
+                            <h5 class="card-title">@question.Title</h5>
+                            <p class="card-text text-muted">
+                                @(question.Description.Length > 100
+                                                        ? question.Description.Substring(0, 100) + "..."
+                                                        : question.Description)
+                    </p>
+                </div>
+                <div class="card-footer d-flex justify-content-between align-items-center">
+                    <small class="text-muted">
+                        Asked by @question.UserName · @question.CreatedAt.ToString("MMM dd, yyyy")
+                    </small>
+                    <a href="/Question/Details/@question.Id" class="btn btn-sm btn-outline-primary">
+                        View (@question.Answers.Count answers)
+                    </a>
+                </div>
+            </div>
+        </div>
+                }
+        </div>
+    }
 </div>

@@ -1,32 +1,37 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using UniGuide.Models;
+using UniGuide.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace UniGuide.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ApplicationDbContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ApplicationDbContext context)
         {
-            _logger = logger;
+            _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index(string category)
         {
-            return View();
+            var questions = _context.Questions
+                .Include(q => q.Answers)
+                .OrderByDescending(q => q.CreatedAt)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(category) && category != "All")
+            {
+                questions = questions.Where(q => q.Category == category);
+            }
+
+            ViewBag.SelectedCategory = category ?? "All";
+            return View(await questions.ToListAsync());
         }
 
         public IActionResult Privacy()
         {
             return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }
